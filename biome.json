@@ -6,10 +6,8 @@
   "linter": {
     "enabled": true,
     "ignore": [
-      ".tamagui",
       "*/ios/**",
       ".vscode",
-      "**/tamagui.css",
       "**/*.d.ts",
       "packages/vendor/**",
       "packages/**/vendor/**",
@@ -83,10 +81,8 @@
     "lineWidth": 100,
     "attributePosition": "multiline",
     "ignore": [
-      ".tamagui",
       "**/ios/**",
       ".vscode",
-      "**/tamagui.css",
       "**/*.d.ts",
       "packages/vendor/**",
       "packages/**/vendor/**",
