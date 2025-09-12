@@ -9,12 +9,15 @@ import {
   SwitchThemeButton,
   useToastController,
   XStack,
-  YStack
+  YStack,
 } from '@hoova/ui'
-import { ChevronDown, ChevronUp } from '@tamagui/lucide-icons'
-import { useState } from 'react'
+import { ChevronDown, ChevronLeft, ChevronUp } from '@tamagui/lucide-icons'
+import { useEffect, useState } from 'react'
 import { Platform } from 'react-native'
 import { useLink } from 'solito/navigation'
+import { useRouter } from 'solito/navigation'
+import { useAuth } from '@hoova/core/store'
+import { getThemes } from 'tamagui'
 
 export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
   const linkTarget = pagesMode ? '/pages-example-user' : '/user'
@@ -22,8 +25,19 @@ export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
     href: `${linkTarget}/nate`,
   })
 
+  // const themess = getThemes()
+
+  const router = useRouter()
+
+  const { authenticated } = useAuth()
+
+  useEffect(() => {
+    // console.log(authenticated)
+    router.push('/onboarding')
+  }, [authenticated])
+
   return (
-    <YStack flex={1} justify="center" items="center" gap="$8" p="$4" bg="$background">      
+    <YStack flex={1} justify="center" items="center" gap="$8" p="$4" bg="$background">
       <XStack
         position="absolute"
         width="100%"
@@ -40,7 +54,6 @@ export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
           </>
         )}
       </XStack>
-
       <YStack gap="$4">
         <H1 text="center" color="$color12">
           Welcome to Tamagui.
@@ -54,9 +67,11 @@ export function HomeScreen({ pagesMode = false }: { pagesMode?: boolean }) {
         </Paragraph>
         <Separator />
       </YStack>
-
       <Button {...linkProps}>Link to user</Button>
 
+      <Button bg="$color" color="$blue1" icon={ChevronLeft} onPress={() => {}}>
+        Go Home
+      </Button>
       <SheetDemo />
     </YStack>
   )

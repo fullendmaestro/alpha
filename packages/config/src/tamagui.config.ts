@@ -1,7 +1,9 @@
 import { defaultConfig } from '@tamagui/config/v4'
 import { createTamagui } from 'tamagui'
+import {} from '@tamagui/themes'
 import { bodyFont, headingFont } from './fonts'
 import { animations } from './animations'
+import { themes } from './themes'
 
 export const config = createTamagui({
   ...defaultConfig,
@@ -10,8 +12,9 @@ export const config = createTamagui({
     body: bodyFont,
     heading: headingFont,
   },
-  settings:{
+  themes: themes,
+  settings: {
     ...defaultConfig.settings,
-    onlyAllowShorthands: false
-  }
+    onlyAllowShorthands: false,
+  },
 })

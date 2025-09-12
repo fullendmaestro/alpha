@@ -5,6 +5,7 @@ import { useFonts } from 'expo-font'
 import { SplashScreen, Stack } from 'expo-router'
 import { Provider } from '@hoova/core/provider'
 import { NativeToast } from '@hoova/ui/src/NativeToast'
+import RequireAth from './RequireAuth'
 
 export const unstable_settings = {
   // Ensure that reloading on `/user` keeps a back button present.
@@ -39,10 +40,48 @@ function RootLayoutNav() {
 
   return (
     <Provider>
-      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
-        <Stack />
-        <NativeToast />
-      </ThemeProvider>
+      <RequireAth>
+        <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
+          <Stack
+            screenOptions={{
+              // headerShown: false,
+              presentation: 'card',
+            }}
+          >
+            <Stack.Screen
+              name="index"
+              options={{
+                title: 'Welcome to Hoova',
+                headerShown: false,
+              }}
+            />
+            <Stack.Screen
+              name="create/index"
+              options={{
+                title: 'Create Wallet',
+                animation: 'slide_from_right',
+                gestureEnabled: false,
+              }}
+            />
+            <Stack.Screen
+              name="import/index"
+              options={{
+                title: 'Import Wallet',
+                animation: 'slide_from_right',
+                gestureEnabled: false,
+              }}
+            />
+            <Stack.Screen
+              name="success/index"
+              options={{
+                title: 'Success',
+                gestureEnabled: false,
+              }}
+            />
+          </Stack>
+          <NativeToast />
+        </ThemeProvider>
+      </RequireAth>
     </Provider>
   )
 }
