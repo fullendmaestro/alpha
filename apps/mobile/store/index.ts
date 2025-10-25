@@ -1,5 +1,0 @@
-export * from './mobile/store'
-export * from './mobile/hooks'
-export * from './slices/authSlice'
-export * from './mobile/StoreProvider'
-export * from './types'
