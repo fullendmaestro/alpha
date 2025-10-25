@@ -1,5 +1,5 @@
 {
-  "name": "web",
+  "name": "@alpha/web",
   "version": "0.0.1",
   "type": "module",
   "private": true,
@@ -28,5 +28,3 @@
     "typescript": "^5.9.2"
   }
 }
-
-

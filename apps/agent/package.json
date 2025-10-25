@@ -1,0 +1,38 @@
+{
+  "name": "@alpha/agent",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "packageManager": "pnpm@10.4.1",
+  "dependencies": {
+    "@google/genai": "^1.27.0",
+    "@modelcontextprotocol/sdk": "^1.20.2",
+    "axios": "^1.12.2",
+    "better-sqlite3": "^12.4.1",
+    "cors": "^2.8.5",
+    "dedent": "^1.7.0",
+    "dotenv": "^17.2.3",
+    "drizzle-orm": "^0.44.7",
+    "express": "^5.1.0",
+    "fastmcp": "^3.21.0",
+    "uuid": "^13.0.0",
+    "viem": "^2.38.4",
+    "zod": "^3.25.76"
+  },
+  "devDependencies": {
+    "@types/better-sqlite3": "^7.6.13",
+    "drizzle-kit": "^0.31.5",
+    "@types/node": "^20.19.9",
+    "@types/react": "^19.1.9",
+    "@types/react-dom": "^19.1.7",
+    "@alpha/eslint-config": "workspace:^",
+    "@alpha/typescript-config": "workspace:*",
+    "typescript": "^5.9.2"
+  }
+}
