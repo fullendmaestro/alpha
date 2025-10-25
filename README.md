@@ -1,31 +1,30 @@
-# shadcn/ui monorepo template
+refine alpha wallet ideas, be brief and proffessional:
 
-This template is for creating a monorepo with shadcn/ui.
+# Alpha
 
-## Usage
+## AIMs
 
-```bash
-pnpm dlx shadcn@latest init
-```
+We are building next generation wallet with agentic ai capabilities.
 
-## Adding components
+built on langgraph
 
-To add components to your app, run the following command at the root of your `web` app:
+can perform tasks in background
 
-```bash
-pnpm dlx shadcn@latest add button -c apps/web
-```
+AI agent sysyem designed to monitor your onchain activities
 
-This will place the ui components in the `packages/ui/src/components` directory.
+automatically index user protocols based on their onchain transactions context
 
-## Tailwind
+various graphs for various operations
+various langgraph ai nodes for handling various tasks
+with clever state and work flow for accuracy
 
-Your `tailwind.config.ts` and `globals.css` are already set up to use the components from the `ui` package.
+import new protocol context
 
-## Using components
+Available as a chrome extension with standalone server for the agents running locally on users machine
 
-To use the components in your app, import them from the `ui` package.
+Analyze governance proposals from DAOs.
+Monitors proposal outcomes
+autonomous liquidity managemnt
+manage positions dynamically
 
-```tsx
-import { Button } from "@workspace/ui/components/button"
-```
+

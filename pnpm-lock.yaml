@@ -8,10 +8,10 @@ importers:
 
   .:
     devDependencies:
-      '@workspace/eslint-config':
+      '@alpha/eslint-config':
         specifier: workspace:*
         version: link:packages/eslint-config
-      '@workspace/typescript-config':
+      '@alpha/typescript-config':
         specifier: workspace:*
         version: link:packages/typescript-config
       prettier:
@@ -26,7 +26,7 @@ importers:
 
   apps/web:
     dependencies:
-      '@workspace/ui':
+      '@alpha/ui':
         specifier: workspace:*
         version: link:../../packages/ui
       lucide-react:
@@ -54,10 +54,10 @@ importers:
       '@types/react-dom':
         specifier: ^19.1.7
         version: 19.1.7(@types/react@19.1.9)
-      '@workspace/eslint-config':
+      '@alpha/eslint-config':
         specifier: workspace:^
         version: link:../../packages/eslint-config
-      '@workspace/typescript-config':
+      '@alpha/typescript-config':
         specifier: workspace:*
         version: link:../../packages/typescript-config
       typescript:
@@ -153,10 +153,10 @@ importers:
       '@types/react-dom':
         specifier: ^19.1.7
         version: 19.1.7(@types/react@19.1.9)
-      '@workspace/eslint-config':
+      '@alpha/eslint-config':
         specifier: workspace:*
         version: link:../eslint-config
-      '@workspace/typescript-config':
+      '@alpha/typescript-config':
         specifier: workspace:*
         version: link:../typescript-config
       tailwindcss:
@@ -4922,3 +4922,5 @@ snapshots:
   yocto-queue@0.1.0: {}
 
   zod@3.25.76: {}
+
+

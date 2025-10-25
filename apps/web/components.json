@@ -14,7 +14,9 @@
     "components": "@/components",
     "hooks": "@/hooks",
     "lib": "@/lib",
-    "utils": "@workspace/ui/lib/utils",
-    "ui": "@workspace/ui/components"
+    "utils": "@alpha/ui/lib/utils",
+    "ui": "@alpha/ui/components"
   }
 }
+
+
