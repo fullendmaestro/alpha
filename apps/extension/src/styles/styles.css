@@ -1,0 +1,57 @@
+.panel-width {
+  min-width: 400px;
+}
+
+html,
+body,
+#root {
+  margin: 0;
+  padding: 0;
+  height: 100%;
+  width: 100%;
+}
+
+body {
+  background-color: #f7fcff;
+  overflow: auto;
+}
+
+.dark body {
+  background-color: #000205;
+}
+
+/* Chrome extension popup specific styles */
+@media (max-width: 450px) {
+  html,
+  body,
+  #root {
+    overflow: hidden;
+  }
+
+  body {
+    min-height: 600px;
+    min-width: 400px;
+    max-height: 600px;
+    max-width: 400px;
+  }
+}
+
+html {
+  scrollbar-width: thin;
+  scrollbar-color: rgba(34, 34, 34, 0.05) transparent;
+}
+
+/* For Webkit browsers */
+html::-webkit-scrollbar {
+  width: 8px;
+  background: transparent;
+}
+
+html::-webkit-scrollbar-thumb {
+  background: rgba(34, 34, 34, 0.05);
+  border-radius: 8px;
+}
+
+html::-webkit-scrollbar-track {
+  background: transparent;
+}
