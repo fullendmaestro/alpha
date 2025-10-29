@@ -5,9 +5,15 @@
   "main": "index.js",
   "scripts": {
     "dev": "npx @langchain/langgraph-cli dev --port 2024 --config ./langgraph.json",
+    "start": "node dist/main.js",
+    "start:dev": "tsx src/main.ts",
     "build": "turbo build:internal --filter=agents",
     "build:internal": "pnpm run clean && tsc",
     "clean": "rm -rf ./dist .turbo || true",
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio",
     "format": "prettier --config .prettierrc --write \"src\"",
     "lint": "eslint src",
     "lint:fix": "eslint src --fix"
@@ -19,13 +25,18 @@
   "dependencies": {
     "@elastic/elasticsearch": "^9.2.0",
     "@google/genai": "^1.27.0",
+    "@hashgraph/sdk": "^2.75.0",
+    "@hono/node-server": "^1.19.5",
+    "@hono/zod-validator": "^0.7.4",
     "@langchain/anthropic": "^1.0.0",
     "@langchain/cohere": "^1.0.0",
     "@langchain/community": "^1.0.0",
     "@langchain/core": "^1.0.1",
     "@langchain/google-genai": "^1.0.0",
     "@langchain/langgraph": "^1.0.1",
+    "@langchain/langgraph-api": "^1.0.0",
     "@langchain/langgraph-checkpoint": "^1.0.0",
+    "@langchain/langgraph-checkpoint-sqlite": "^1.0.0",
     "@langchain/mongodb": "^1.0.0",
     "@langchain/ollama": "^1.0.0",
     "@langchain/openai": "^1.0.0",
@@ -40,8 +51,11 @@
     "drizzle-orm": "^0.44.7",
     "express": "^5.1.0",
     "fastmcp": "^3.21.0",
+    "hedera-agent-kit": "^3.4.0",
+    "hono": "^4.10.3",
     "langchain": "^1.0.1",
     "mongodb": "^6.20.0",
+    "prompts": "^2.4.2",
     "uuid": "^13.0.0",
     "viem": "^2.38.4",
     "zod": "^3.25.76"
@@ -55,6 +69,7 @@
     "@types/react": "^19.1.9",
     "@types/react-dom": "^19.1.7",
     "drizzle-kit": "^0.31.5",
+    "tsx": "^4.20.6",
     "typescript": "^5.9.2"
   }
 }
