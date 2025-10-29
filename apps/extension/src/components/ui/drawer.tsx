@@ -1,135 +1,143 @@
-"use client"
+'use client'
 
-import * as React from "react"
-import { Drawer as DrawerPrimitive } from "vaul"
+import { cn } from '@/lib/utils'
+import * as React from 'react'
+import { Drawer as DrawerPrimitive } from 'vaul'
 
-import { cn } from "@alpha/ui/lib/utils"
-
-function Drawer({
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Root>) {
-  return <DrawerPrimitive.Root data-slot="drawer" {...props} />
+type DrawerProps = React.ComponentProps<typeof DrawerPrimitive.Root> & {
+  shouldScaleBackground?: boolean
+  container?: HTMLElement
 }
 
-function DrawerTrigger({
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Trigger>) {
-  return <DrawerPrimitive.Trigger data-slot="drawer-trigger" {...props} />
-}
+const Drawer = ({ shouldScaleBackground = false, container, ...props }: DrawerProps) => {
+  const containerEl =
+    container ?? (document.getElementById('popup-layout')?.parentNode as HTMLElement)
 
-function DrawerPortal({
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Portal>) {
-  return <DrawerPrimitive.Portal data-slot="drawer-portal" {...props} />
-}
-
-function DrawerClose({
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Close>) {
-  return <DrawerPrimitive.Close data-slot="drawer-close" {...props} />
-}
-
-function DrawerOverlay({
-  className,
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Overlay>) {
   return (
-    <DrawerPrimitive.Overlay
-      data-slot="drawer-overlay"
-      className={cn(
-        "data-[state=open]:animate-in data-[state=closed]:animate-out data-[state=closed]:fade-out-0 data-[state=open]:fade-in-0 fixed inset-0 z-50 bg-black/50",
-        className
-      )}
+    <DrawerPrimitive.Root
+      shouldScaleBackground={shouldScaleBackground}
+      container={containerEl}
+      handleOnly={true}
       {...props}
     />
   )
 }
+Drawer.displayName = 'Drawer'
 
-function DrawerContent({
-  className,
-  children,
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Content>) {
-  return (
-    <DrawerPortal data-slot="drawer-portal">
-      <DrawerOverlay />
+const DrawerTrigger = DrawerPrimitive.Trigger
+
+const DrawerPortal = DrawerPrimitive.Portal
+
+const DrawerClose = DrawerPrimitive.Close
+
+type DrawerOverlayProps = React.ComponentProps<typeof DrawerPrimitive.Overlay> & {
+  className?: string
+}
+
+const DrawerOverlay = React.forwardRef<React.ElementRef<'div'>, DrawerOverlayProps>(
+  ({ className, ...props }, ref) => (
+    <DrawerPrimitive.Overlay
+      ref={ref}
+      className={cn('absolute inset-0 z-50 bg-background/90', className)}
+      {...props}
+    />
+  )
+)
+DrawerOverlay.displayName = DrawerPrimitive.Overlay.displayName
+
+type DrawerContentProps = React.ComponentProps<typeof DrawerPrimitive.Content> & {
+  className?: string
+  overlayClassName?: string
+  showHandle?: boolean
+}
+
+const DrawerContent = React.forwardRef<React.ElementRef<'div'>, DrawerContentProps>(
+  ({ className, children, showHandle = true, overlayClassName, ...props }, ref) => (
+    <DrawerPortal>
+      <DrawerOverlay className={overlayClassName} />
       <DrawerPrimitive.Content
-        data-slot="drawer-content"
+        ref={ref}
         className={cn(
-          "group/drawer-content bg-background fixed z-50 flex h-auto flex-col",
-          "data-[vaul-drawer-direction=top]:inset-x-0 data-[vaul-drawer-direction=top]:top-0 data-[vaul-drawer-direction=top]:mb-24 data-[vaul-drawer-direction=top]:max-h-[80vh] data-[vaul-drawer-direction=top]:rounded-b-lg data-[vaul-drawer-direction=top]:border-b",
-          "data-[vaul-drawer-direction=bottom]:inset-x-0 data-[vaul-drawer-direction=bottom]:bottom-0 data-[vaul-drawer-direction=bottom]:mt-24 data-[vaul-drawer-direction=bottom]:max-h-[80vh] data-[vaul-drawer-direction=bottom]:rounded-t-lg data-[vaul-drawer-direction=bottom]:border-t",
-          "data-[vaul-drawer-direction=right]:inset-y-0 data-[vaul-drawer-direction=right]:right-0 data-[vaul-drawer-direction=right]:w-3/4 data-[vaul-drawer-direction=right]:border-l data-[vaul-drawer-direction=right]:sm:max-w-sm",
-          "data-[vaul-drawer-direction=left]:inset-y-0 data-[vaul-drawer-direction=left]:left-0 data-[vaul-drawer-direction=left]:w-3/4 data-[vaul-drawer-direction=left]:border-r data-[vaul-drawer-direction=left]:sm:max-w-sm",
+          'overflow-hidden rounded-t-3xl absolute inset-x-0 bottom-0 z-50 flex h-auto flex-col outline-none border-none ring-0',
           className
         )}
         {...props}
+        /**
+         * Added below to avoid the console warnings in vaul 1.1.2:
+         * https://github.com/unovue/vaul-vue/issues/79
+         */
+        aria-describedby={undefined}
       >
-        <div className="bg-muted mx-auto mt-4 hidden h-2 w-[100px] shrink-0 rounded-full group-data-[vaul-drawer-direction=bottom]/drawer-content:block" />
+        {showHandle && (
+          <DrawerPrimitive.Handle className="mx-auto !mt-1 !bg-transparent !h-auto !opacity-100 [&>span]:h-1 [&>span]:!relative [&>span]:!inset-auto [&>span]:!transform-none [&>span]:!w-12 [&>span]:rounded-full [&>span]:bg-secondary-600 [&>span]:block hover:[&>span]:bg-secondary-800 [&>span]:!transition-colors [&>span]:!cursor-pointer" />
+        )}
         {children}
       </DrawerPrimitive.Content>
     </DrawerPortal>
   )
+)
+DrawerContent.displayName = 'DrawerContent'
+
+type DrawerHeaderProps = React.HTMLAttributes<HTMLDivElement> & {
+  className?: string
 }
 
-function DrawerHeader({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="drawer-header"
-      className={cn(
-        "flex flex-col gap-0.5 p-4 group-data-[vaul-drawer-direction=bottom]/drawer-content:text-center group-data-[vaul-drawer-direction=top]/drawer-content:text-center md:gap-1.5 md:text-left",
-        className
-      )}
-      {...props}
-    />
-  )
+const DrawerHeader = ({ className, ...props }: DrawerHeaderProps) => (
+  <div
+    className={cn('grid gap-1.5 py-[6px] px-3 text-center sm:text-left', className)}
+    {...props}
+  />
+)
+DrawerHeader.displayName = 'DrawerHeader'
+
+type DrawerFooterProps = React.HTMLAttributes<HTMLDivElement> & {
+  className?: string
 }
 
-function DrawerFooter({ className, ...props }: React.ComponentProps<"div">) {
-  return (
-    <div
-      data-slot="drawer-footer"
-      className={cn("mt-auto flex flex-col gap-2 p-4", className)}
-      {...props}
-    />
-  )
+const DrawerFooter = ({ className, ...props }: DrawerFooterProps) => (
+  <div className={cn('mt-auto flex flex-col gap-2 p-4', className)} {...props} />
+)
+DrawerFooter.displayName = 'DrawerFooter'
+
+type DrawerTitleProps = React.ComponentProps<typeof DrawerPrimitive.Title> & {
+  className?: string
 }
 
-function DrawerTitle({
-  className,
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Title>) {
-  return (
+const DrawerTitle = React.forwardRef<React.ElementRef<'h3'>, DrawerTitleProps>(
+  ({ className, ...props }, ref) => (
     <DrawerPrimitive.Title
-      data-slot="drawer-title"
-      className={cn("text-foreground font-semibold", className)}
+      ref={ref}
+      className={cn('text-lg font-semibold leading-none tracking-tight', className)}
       {...props}
     />
   )
+)
+DrawerTitle.displayName = DrawerPrimitive.Title.displayName
+
+type DrawerDescriptionProps = React.ComponentProps<typeof DrawerPrimitive.Description> & {
+  className?: string
 }
 
-function DrawerDescription({
-  className,
-  ...props
-}: React.ComponentProps<typeof DrawerPrimitive.Description>) {
-  return (
+const DrawerDescription = React.forwardRef<React.ElementRef<'p'>, DrawerDescriptionProps>(
+  ({ className, ...props }, ref) => (
     <DrawerPrimitive.Description
-      data-slot="drawer-description"
-      className={cn("text-muted-foreground text-sm", className)}
+      ref={ref}
+      className={cn('text-sm text-muted-foreground', className)}
       {...props}
     />
   )
-}
+)
+DrawerDescription.displayName = DrawerPrimitive.Description.displayName
 
 export {
   Drawer,
-  DrawerPortal,
-  DrawerOverlay,
-  DrawerTrigger,
   DrawerClose,
   DrawerContent,
-  DrawerHeader,
-  DrawerFooter,
-  DrawerTitle,
   DrawerDescription,
+  DrawerFooter,
+  DrawerHeader,
+  DrawerOverlay,
+  DrawerPortal,
+  DrawerTitle,
+  DrawerTrigger,
 }

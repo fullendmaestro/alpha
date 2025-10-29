@@ -13,6 +13,9 @@ export interface AppState {
   langgraphConfig: {
     apiUrl: string
     assistantId: string
+    threadId: string | null
+    apiKey: string | null
+    hideToolCalls: boolean
   }
 }
 
@@ -37,7 +40,7 @@ export interface BaseToken {
   balance: string
   current_price?: number
   price_change_24h?: number
-  logoUrl: string
+  logoUrl?: string
 }
 
 // Hedera HTS token (Hedera Token Service)
@@ -45,6 +48,7 @@ export interface HederaToken extends BaseToken {
   tokenId: string // Hedera token ID (e.g., 0.0.12345)
   networkSlug: string // which Hedera network this token belongs to
   tokenType: 'FUNGIBLE_COMMON' | 'NON_FUNGIBLE_UNIQUE'
+  isNative?: false
 }
 
 // Native HBAR token

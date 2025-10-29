@@ -35,6 +35,7 @@ const manifest: chrome.runtime.ManifestV3 = {
     },
   },
   permissions: ['storage', 'sidePanel', 'tabs', 'alarms', 'notifications', 'nativeMessaging'],
+  host_permissions: ['https://api.coingecko.com/*'],
 }
 
 export default manifest

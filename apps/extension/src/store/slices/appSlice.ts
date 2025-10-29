@@ -12,6 +12,9 @@ const initialState: AppState = {
   langgraphConfig: {
     apiUrl: 'http://localhost:2024',
     assistantId: 'agent',
+    threadId: null,
+    apiKey: null,
+    hideToolCalls: false,
   },
 }
 
@@ -37,13 +40,28 @@ const appSlice = createSlice({
     },
     setLanggraphConfig: (
       state,
-      action: PayloadAction<{ apiUrl?: string; assistantId?: string }>
+      action: PayloadAction<{
+        apiUrl?: string
+        assistantId?: string
+        threadId?: string | null
+        apiKey?: string
+        hideToolCalls?: boolean
+      }>
     ) => {
       if (action.payload.apiUrl) {
         state.langgraphConfig.apiUrl = action.payload.apiUrl
       }
       if (action.payload.assistantId) {
         state.langgraphConfig.assistantId = action.payload.assistantId
+      }
+      if (action.payload.threadId) {
+        state.langgraphConfig.threadId = action.payload.threadId
+      }
+      if (action.payload.apiKey) {
+        state.langgraphConfig.apiKey = action.payload.apiKey
+      }
+      if (action.payload.hideToolCalls) {
+        state.langgraphConfig.hideToolCalls = action.payload.hideToolCalls
       }
     },
     resetApp: () => initialState,

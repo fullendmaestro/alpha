@@ -1,14 +1,28 @@
-import { useState } from 'react'
-import { Button } from '@alpha/ui/components/button'
+import { useEffect } from 'react'
+import { useNavigate, useLocation } from 'react-router-dom'
+import { useAppSelector } from '@/store/hooks'
+import AppRoutes from './Routes'
 
 export const Popup = () => {
-  const [count, setCount] = useState(0)
+  const navigate = useNavigate()
+  const location = useLocation()
+  const wallets = useAppSelector((state) => state.wallet.wallets)
+  const hasWallets = wallets.length > 0
+
+  useEffect(() => {
+    // Only run on initial mount and when at root path
+    if (location.pathname === '/') {
+      if (hasWallets) {
+        navigate('/home', { replace: true })
+      } else {
+        navigate('/onboard', { replace: true })
+      }
+    }
+  }, []) // Empty dependency array to run only once on mount
 
   return (
-    <div>
-      <p>Count: {count}</p>
-
-      <Button onClick={() => setCount(count + 1)}>Increment</Button>
+    <div className="h-full w-full">
+      <AppRoutes />
     </div>
   )
 }
