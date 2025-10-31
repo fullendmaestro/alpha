@@ -1,32 +1,18 @@
-import { Geist, Geist_Mono } from "next/font/google"
+import { Inter } from 'next/font/google'
 
-import "@alpha/ui/globals.css"
-import { Providers } from "@/components/providers"
+import '@alpha/ui/globals.css'
+import { ReactNode } from 'react'
 
-const fontSans = Geist({
-  subsets: ["latin"],
-  variable: "--font-sans",
-})
+const inter = Inter({ subsets: ['latin'] })
 
-const fontMono = Geist_Mono({
-  subsets: ["latin"],
-  variable: "--font-mono",
-})
+interface RootLayoutProps {
+  children: ReactNode
+}
 
-export default function RootLayout({
-  children,
-}: Readonly<{
-  children: React.ReactNode
-}>) {
+export default function RootLayout({ children }: RootLayoutProps): ReactElement {
   return (
     <html lang="en" suppressHydrationWarning>
-      <body
-        className={`${fontSans.variable} ${fontMono.variable} font-sans antialiased `}
-      >
-        <Providers>{children}</Providers>
-      </body>
+      <body className={inter.className}>{children}</body>
     </html>
   )
 }
-
-
