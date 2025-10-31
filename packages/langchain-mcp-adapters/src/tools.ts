@@ -665,56 +665,54 @@ export async function loadMcpTools(
 
   function sanitizeSchemaForGoogle(schema: any, depth: number = 0): any {
     if (!schema || typeof schema !== "object") return schema;
-    
+
     if (Array.isArray(schema)) {
       return schema.map((item) => sanitizeSchemaForGoogle(item, depth + 1));
     }
-    
+
     const cleaned: any = {};
-    
+
     // Determine if we need to include "type" based on what fields are present
     // Google requires "type" when certain fields are present, even in nested structures
-    const hasProperties = schema.properties && typeof schema.properties === "object";
+    const hasProperties =
+      schema.properties && typeof schema.properties === "object";
     const hasItems = schema.items !== undefined;
     const hasEnum = schema.enum !== undefined;
     const hasRequired = schema.required !== undefined;
-    
+
     // Include type if:
     // 1. We're at top level (depth 0), OR
     // 2. The schema has properties (must be type: "object"), OR
     // 3. The schema has items (must be type: "array"), OR
     // 4. The schema has enum (must be type: "string" or specific type), OR
     // 5. The schema has required (must be type: "object")
-    if (schema.type !== undefined && (
-      depth === 0 || 
-      hasProperties || 
-      hasItems || 
-      hasEnum || 
-      hasRequired
-    )) {
+    if (
+      schema.type !== undefined &&
+      (depth === 0 || hasProperties || hasItems || hasEnum || hasRequired)
+    ) {
       cleaned.type = schema.type;
     }
-    
+
     // Always include description if present
     if (schema.description !== undefined) {
       cleaned.description = schema.description;
     }
-    
+
     // Handle enum values
     if (hasEnum) {
       cleaned.enum = schema.enum;
     }
-    
+
     // Handle default values
     if (schema.default !== undefined) {
       cleaned.default = schema.default;
     }
-    
+
     // Handle required fields
     if (hasRequired) {
       cleaned.required = schema.required;
     }
-    
+
     // Handle properties - recursively sanitize but increase depth
     if (hasProperties) {
       cleaned.properties = {};
@@ -725,17 +723,17 @@ export async function loadMcpTools(
         }
       }
     }
-    
+
     // Handle array items - recursively sanitize but increase depth
     if (hasItems) {
       cleaned.items = sanitizeSchemaForGoogle(schema.items, depth + 1);
     }
-    
+
     // If we ended up with an empty object (except at top level), provide a description
     if (depth > 0 && Object.keys(cleaned).length === 0) {
       cleaned.description = "Parameter";
     }
-    
+
     return cleaned;
   }
 
