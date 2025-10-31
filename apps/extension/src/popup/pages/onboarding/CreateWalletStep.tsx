@@ -109,6 +109,7 @@ const CreateWalletStep: React.FC = () => {
         <div className="flex gap-3 pt-4 border-t mt-6">
           <Button
             type="button"
+            size={'bg'}
             variant="outline"
             onClick={prevStep}
             disabled={isCreating}
@@ -117,6 +118,7 @@ const CreateWalletStep: React.FC = () => {
             Back
           </Button>
           <Button
+            size={'bg'}
             onClick={handleCreateWallet}
             disabled={!walletName.trim() || isCreating}
             className="flex-1 gradient-golden"

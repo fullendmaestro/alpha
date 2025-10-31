@@ -18,6 +18,8 @@ const Chat = () => {
 
   const [input, setInput] = useState('')
   const [firstTokenReceived, setFirstTokenReceived] = useState(false)
+  const messagesEndRef = useRef<HTMLDivElement>(null)
+  const scrollContainerRef = useRef<HTMLDivElement>(null)
 
   const stream = useStreamContext()
   const messages = stream.messages
@@ -66,6 +68,13 @@ const Chat = () => {
     // prevMessageLength.current = messages.length
   }, [messages])
 
+  // Auto-scroll to bottom when messages change or when streaming
+  useEffect(() => {
+    if (messagesEndRef.current) {
+      messagesEndRef.current.scrollIntoView({ behavior: 'smooth', block: 'end' })
+    }
+  }, [messages, isLoading])
+
   const handleSubmit = (e: FormEvent) => {
     e.preventDefault()
     if (!input.trim() || isLoading) return
@@ -107,7 +116,10 @@ const Chat = () => {
 
   return (
     <div className="flex flex-col h-full w-full">
-      <div className="flex-1 flex flex-col gap-3 px-4 py-2 overflow-y-auto">
+      <div
+        ref={scrollContainerRef}
+        className="flex-1 flex flex-col gap-3 px-4 py-2 overflow-y-auto"
+      >
         <>
           {messages
             .filter((m) => !m.id?.startsWith(DO_NOT_RENDER_ID_PREFIX))
@@ -138,6 +150,7 @@ const Chat = () => {
             />
           )}
           {isLoading && !firstTokenReceived && <AssistantMessageLoading />}
+          <div ref={messagesEndRef} />
         </>
 
         {/* <ChatMessages messages={messages} />

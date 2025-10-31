@@ -80,7 +80,7 @@ const ImportOptionStep: React.FC = () => {
 
       {/* Actions */}
       <div className="flex gap-3 pt-4 border-t mt-6">
-        <Button type="button" variant="outline" onClick={prevStep} className="flex-1">
+        <Button size={'bg'} type="button" variant="outline" onClick={prevStep} className="flex-1">
           Back
         </Button>
       </div>

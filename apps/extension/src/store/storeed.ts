@@ -1,38 +1,8 @@
-const stored = {
-  app: {
-    authenticated: false,
-    passwordKeyContent: null,
-    authenticating: false,
-    onBoarded: false,
-    selected_network_slug: 'hedera-testnet',
-    networks: [
-      {
-        id: 'hedera-testnet',
-        nameSlug: 'hedera-testnet',
-        name: 'Hedera Testnet',
-        chainId: '296',
-        rpcUrl: 'https://testnet.hashio.io/api',
-        mirrorNodeUrl: 'https://testnet.mirrornode.hedera.com',
-        nativeCurrency: { name: 'HBAR', symbol: 'HBAR', decimals: 8 },
-        logoURL: 'https://cryptologos.cc/logos/hedera-hbar-logo.svg',
-        explorerUrl: 'https://hashscan.io/testnet',
-      },
-    ],
-    langgraphConfig: {
-      apiUrl: 'http://localhost:2024',
-      assistantId: 'agent',
-      threadId: 'ce796433-601a-4c5e-95a3-dfa4ce0a2d02',
-      apiKey: null,
-      hideToolCalls: false,
-    },
-  },
-  settings: {
-    baseCurrency: 'USD',
-    autoLockTimeOut: 10,
-    hidePortfolioBalances: false,
-    openAsSidePanel: false,
-    theme: 'dark',
-  },
-  wallet: { selectedWalletSlug: 'all', wallets: [] },
-  _persist: { version: -1, rehydrated: true },
+const ddd = {
+  app: {"authenticated":false,"passwordKeyContent":null,"authenticating":false,"onBoarded":false,"selected_network_slug":"hedera-testnet","networks":[{"id":"hedera-testnet","nameSlug":"hedera-testnet","name":"Hedera Testnet","chainId":"296","rpcUrl":"https://testnet.hashio.io/api","mirrorNodeUrl":"https://testnet.mirrornode.hedera.com","nativeCurrency":{"name":"HBAR","symbol":"HBAR","decimals":8},"logoURL":"https://cryptologos.cc/logos/hedera-hbar-logo.svg","explorerUrl":"https://hashscan.io/testnet"}],"langgraphConfig":{"apiUrl":"http://localhost:2024","assistantId":"agent","threadId":"8f483522-42c0-4f54-933a-d21946f4ab5b","apiKey":null,"hideToolCalls":false}},
+  settings:
+    {"baseCurrency":"USD","autoLockTimeOut":10,"hidePortfolioBalances":false,"openAsSidePanel":false,"theme":"dark"},
+  wallet:
+    {"selectedWalletSlug":"249980c4-bc77-44ac-88ea-916b65cb9a3a","wallets":[{"id":"249980c4-bc77-44ac-88ea-916b65cb9a3a","name":"Wallet 1","publicKey":"302d300706052b8104000a032200036f803cd8fb031ac7319531692d032fe5a109436200b0e1df643ba0a81d98cb7e","privateKey":"3030020100300706052b8104000a04220420d0d11ed62b5f0980ddb8265deafdb77cf3b511ada797cb17e27b110b47c0d2d1","accountId":"0.0.6496803","networkBalances":{"hedera-testnet":{"networkSlug":"hedera-testnet","nativeToken":{"id":"hedera-testnet-hbar","name":"Hedera","symbol":"HBAR","decimals":8,"balance":"999.46628341","networkSlug":"hedera-testnet","isNative":true,"current_price":0.05,"price_change_24h":0,"logoUrl":"chrome-extension://ldpphegncoeohkcpabainnemmbkomahn/assets/hedera-hashgraph-logo.svg"},"htsTokens":[],"nftAssets":[],"totalBalance":"49.97"}},"totalBalance":"49.97"}]},
+  _persist: {"version":-1,"rehydrated":true},
 }

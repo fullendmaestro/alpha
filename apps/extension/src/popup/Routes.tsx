@@ -3,6 +3,7 @@ import { GlobalLayout } from './layout'
 import Home from './pages/home/page'
 import ChatPage from './pages/chat/page'
 import WelcomePage from './pages/onboarding/page'
+import Protected from './Protected'
 
 export default function AppRoutes() {
   const location = useLocation()
@@ -25,9 +26,22 @@ export default function AppRoutes() {
       <div className="w-[28rem] h-[37.5rem] rounded-3xl shadow-xl bg-secondary overflow-hidden">
         <GlobalLayout location={location}>
           <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/home" element={<Home />} />
-            <Route path="/chat" element={<ChatPage />} />
+            <Route
+              path="/"
+              element={
+                <Protected>
+                  <Home />
+                </Protected>
+              }
+            />
+            <Route
+              path="/chat"
+              element={
+                <Protected>
+                  <ChatPage />
+                </Protected>
+              }
+            />
           </Routes>
         </GlobalLayout>
       </div>

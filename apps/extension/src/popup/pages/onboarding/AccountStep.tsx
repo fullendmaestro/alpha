@@ -203,11 +203,12 @@ const AccountStep: React.FC = () => {
 
         {/* Actions */}
         <div className="flex gap-3 pt-4 border-t mt-6">
-          <Button type="button" variant="outline" onClick={prevStep} className="flex-1">
+          <Button size={'bg'} type="button" variant="outline" onClick={prevStep} className="flex-1">
             Back
           </Button>
           <Button
             type="submit"
+            size={'bg'}
             disabled={!accountIdText.trim() || isValidating}
             className="flex-1 gradient-golden"
           >

@@ -23,6 +23,7 @@ export function ChatHistoryModal({
   const { getThreads, threads, setThreads, threadsLoading, setThreadsLoading } = useThreads()
 
   useEffect(() => {
+    console.log('threads', threads)
     if (typeof window === 'undefined') return
     setThreadsLoading(true)
     getThreads()
@@ -43,7 +44,10 @@ export function ChatHistoryModal({
         {/* New Chat Button */}
         <div className="h-full flex flex-col w-full gap-2 items-start justify-start overflow-y-scroll [&::-webkit-scrollbar]:w-1.5 [&::-webkit-scrollbar-thumb]:rounded-full [&::-webkit-scrollbar-thumb]:bg-gray-300 [&::-webkit-scrollbar-track]:bg-transparent">
           <Button
-            onClick={() => dispatch(setLanggraphConfig({ threadId: null }))}
+            onClick={() => {
+              dispatch(setLanggraphConfig({ threadId: null }))
+              onClose()
+            }}
             className="w-full flex items-center gap-2 justify-center mb-4"
             variant="default"
           >

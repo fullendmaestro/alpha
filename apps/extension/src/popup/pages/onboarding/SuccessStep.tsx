@@ -47,22 +47,11 @@ const SuccessStep: React.FC = () => {
             Your wallet has been successfully imported and is ready to use.
           </p>
         </div>
-
-        {/* Wallet Info */}
-        <div className="p-4 rounded-lg bg-muted/50 border border-border">
-          <p className="text-sm text-muted-foreground mb-1">You can now:</p>
-          <ul className="text-sm text-foreground space-y-1">
-            <li>✓ View your HBAR balance</li>
-            <li>✓ Manage your tokens</li>
-            <li>✓ Send and receive transactions</li>
-            <li>✓ Chat with AI agents</li>
-          </ul>
-        </div>
       </div>
 
       {/* Action */}
       <div className="pt-4 border-t">
-        <Button onClick={() => navigate('/home')} className="w-full gradient-golden">
+        <Button size={'bg'} onClick={() => navigate('/home')} className="w-full gradient-golden">
           Go to Dashboard
         </Button>
       </div>

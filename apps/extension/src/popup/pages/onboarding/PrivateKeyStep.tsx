@@ -90,24 +90,16 @@ const PrivateKeyStep: React.FC = () => {
               <AlertDescription>{error}</AlertDescription>
             </Alert>
           )}
-
-          {/* Not Recommended Warning */}
-          <Alert className="bg-yellow-500/10 border-yellow-500/50">
-            <AlertCircle className="h-4 w-4 text-yellow-500" />
-            <AlertDescription className="text-yellow-500">
-              <strong>Not Recommended:</strong> Importing private keys directly is less secure. Use
-              hardware wallets for better security.
-            </AlertDescription>
-          </Alert>
         </div>
 
         {/* Actions */}
         <div className="flex gap-3 pt-4 border-t mt-6">
-          <Button type="button" variant="outline" onClick={prevStep} className="flex-1">
+          <Button size={'bg'} type="button" variant="outline" onClick={prevStep} className="flex-1">
             Back
           </Button>
           <Button
             type="submit"
+            size={'bg'}
             disabled={!privateKeyText.trim() || isValidating}
             className="flex-1 gradient-golden"
           >
