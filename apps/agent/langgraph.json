@@ -4,5 +4,8 @@
   "graphs": {
     "agent": "./src/react-agent/graph.ts:graph"
   },
-  "env": ".env"
+  "env": ".env",
+  "http": {
+    "app": "./src/app.ts:app"
+  }
 }

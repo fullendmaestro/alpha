@@ -1,4 +1,0 @@
-# Ignore SQLite databases and related files
-*.db
-*.db-shm
-*.db-wal
