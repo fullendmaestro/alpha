@@ -1,64 +1,280 @@
 import { AIMessage, ToolMessage } from "@langchain/langgraph-sdk";
 import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { ChevronDown, ChevronUp } from "lucide-react";
+import { 
+  ChevronDown, 
+  ChevronUp, 
+  Wrench, 
+  Info, 
+  Loader2, 
+  CheckCircle2,
+  Coins,
+  Send,
+  FileText,
+  MessageSquare,
+  Users,
+  CreditCard,
+  ArrowRightLeft
+} from "lucide-react";
+import { cn } from "@/lib/utils";
+import BottomModal from "@/components/buttom-modal";
+
+// Define tool call type
+type ToolCall = {
+  name: string;
+  args: { [x: string]: any };
+  id?: string;
+  type?: "tool_call";
+};
 
 function isComplexValue(value: any): boolean {
   return Array.isArray(value) || (typeof value === "object" && value !== null);
 }
 
+// Map tool names to icons
+function getToolIcon(toolName: string) {
+  const name = toolName.toLowerCase();
+  
+  if (name.includes('token') || name.includes('fungible') || name.includes('nft')) {
+    return Coins;
+  }
+  if (name.includes('transfer') || name.includes('hbar')) {
+    return Send;
+  }
+  if (name.includes('topic') || name.includes('message')) {
+    return MessageSquare;
+  }
+  if (name.includes('airdrop')) {
+    return Users;
+  }
+  if (name.includes('balance') || name.includes('query') || name.includes('account')) {
+    return CreditCard;
+  }
+  if (name.includes('mint')) {
+    return Coins;
+  }
+  if (name.includes('submit')) {
+    return FileText;
+  }
+  
+  return Wrench;
+}
+
+// Format tool name for display
+function formatToolName(toolName: string): string {
+  return toolName
+    .replace(/_/g, ' ')
+    .split(' ')
+    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ');
+}
+
+// Get tool description based on name
+function getToolDescription(toolName: string): string {
+  const name = toolName.toLowerCase();
+  
+  if (name.includes('create') && name.includes('fungible')) {
+    return 'Creating a new fungible token';
+  }
+  if (name.includes('create') && (name.includes('nft') || name.includes('non_fungible'))) {
+    return 'Creating a new NFT';
+  }
+  if (name.includes('transfer') && name.includes('hbar')) {
+    return 'Transferring HBAR';
+  }
+  if (name.includes('airdrop')) {
+    return 'Airdropping tokens';
+  }
+  if (name.includes('mint')) {
+    return 'Minting tokens';
+  }
+  if (name.includes('balance')) {
+    return 'Fetching balance';
+  }
+  if (name.includes('topic') && name.includes('create')) {
+    return 'Creating topic';
+  }
+  if (name.includes('topic') && name.includes('submit')) {
+    return 'Submitting message to topic';
+  }
+  if (name.includes('query') && name.includes('account')) {
+    return 'Querying account information';
+  }
+  
+  return 'Executing operation';
+}
+
+interface ToolDetailModalProps {
+  isOpen: boolean;
+  onClose: () => void;
+  toolCall: ToolCall;
+  result?: any;
+}
+
+function ToolDetailModal({ isOpen, onClose, toolCall, result }: ToolDetailModalProps) {
+  const args = toolCall.args as Record<string, any>;
+  const hasArgs = Object.keys(args).length > 0;
+
+  return (
+    <BottomModal
+      isOpen={isOpen}
+      onClose={onClose}
+      title={formatToolName(toolCall.name)}
+      className="h-auto max-h-[80vh]"
+    >
+      <div className="space-y-4">
+        {/* Tool ID */}
+        {toolCall.id && (
+          <div className="text-xs text-muted-foreground">
+            ID: <code className="bg-secondary-100 px-2 py-1 rounded">{toolCall.id}</code>
+          </div>
+        )}
+
+        {/* Input Section */}
+        <div>
+          <h3 className="text-sm font-semibold mb-2">Input Parameters</h3>
+          {hasArgs ? (
+            <div className="space-y-2">
+              {Object.entries(args).map(([key, value], idx) => (
+                <div key={idx} className="bg-secondary-100 rounded-lg p-3">
+                  <div className="text-xs font-medium text-foreground/70 mb-1">
+                    {key}
+                  </div>
+                  <div className="text-sm">
+                    {isComplexValue(value) ? (
+                      <pre className="bg-secondary-200 rounded p-2 text-xs overflow-x-auto">
+                        {JSON.stringify(value, null, 2)}
+                      </pre>
+                    ) : (
+                      <code className="text-sm">{String(value)}</code>
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <div className="text-sm text-muted-foreground">No parameters</div>
+          )}
+        </div>
+
+        {/* Result Section */}
+        {result && (
+          <div>
+            <h3 className="text-sm font-semibold mb-2">Result</h3>
+            <div className="bg-secondary-100 rounded-lg p-3">
+              <pre className="text-xs overflow-x-auto">
+                {typeof result === 'string' ? result : JSON.stringify(result, null, 2)}
+              </pre>
+            </div>
+          </div>
+        )}
+      </div>
+    </BottomModal>
+  );
+}
+
+interface ToolCallCardProps {
+  toolCall: ToolCall;
+  isLoading?: boolean;
+  result?: any;
+}
+
+function ToolCallCard({ toolCall, isLoading = false, result }: ToolCallCardProps) {
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  const Icon = getToolIcon(toolCall.name);
+  const displayName = formatToolName(toolCall.name);
+  const description = getToolDescription(toolCall.name);
+
+  return (
+    <>
+      <div
+        className={cn(
+          'flex items-center justify-between gap-3 py-3 px-4 rounded-2xl transition-all cursor-pointer',
+          isLoading 
+            ? 'bg-accent-blue-900/50 border border-accent-blue-700/50' 
+            : 'bg-secondary-100 hover:bg-secondary-200'
+        )}
+        onClick={() => setIsModalOpen(true)}
+      >
+        <div className="size-9 rounded-full bg-secondary-300 flex items-center justify-center flex-shrink-0">
+          <Icon size={20} className="text-foreground/70" />
+        </div>
+        
+        <div className="flex-1 min-w-0">
+          <div className="flex items-center gap-2">
+            <div className="text-sm font-bold truncate">{displayName}</div>
+            {isLoading && (
+              <Loader2 size={14} className="animate-spin text-accent-blue" />
+            )}
+            {!isLoading && result && (
+              <CheckCircle2 size={14} className="text-green-500" />
+            )}
+          </div>
+          <div className="text-xs text-muted-foreground truncate">
+            {description}
+          </div>
+        </div>
+
+        <button
+          className="size-7 cursor-pointer justify-center text-monochrome/60 hover:text-monochrome grid place-content-center flex-shrink-0"
+          onClick={(e) => {
+            e.stopPropagation();
+            setIsModalOpen(true);
+          }}
+        >
+          <Info size={18} />
+        </button>
+      </div>
+
+      <ToolDetailModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        toolCall={toolCall}
+        result={result}
+      />
+    </>
+  );
+}
+
 export function ToolCalls({
   toolCalls,
+  toolResponses,
+  isLoading = false,
 }: {
   toolCalls: AIMessage["tool_calls"];
+  toolResponses?: Array<{ toolCall: ToolCall; response?: any }>;
+  isLoading?: boolean;
 }) {
   if (!toolCalls || toolCalls.length === 0) return null;
 
   return (
-    <div className="space-y-4 w-full max-w-4xl">
+    <div className="space-y-3 w-full">
       {toolCalls.map((tc, idx) => {
-        const args = tc.args as Record<string, any>;
-        const hasArgs = Object.keys(args).length > 0;
+        // Find the response for this tool call
+        const toolData = toolResponses?.find(tr => tr.toolCall.id === tc.id);
+        const hasResponse = toolData?.response;
+        
+        // Parse the response content
+        let responseContent;
+        if (hasResponse) {
+          try {
+            if (typeof toolData.response.content === 'string') {
+              responseContent = JSON.parse(toolData.response.content);
+            } else {
+              responseContent = toolData.response.content;
+            }
+          } catch {
+            responseContent = toolData.response.content;
+          }
+        }
+
         return (
-          <div
-            key={idx}
-            className="border border-gray-200 rounded-lg overflow-hidden"
-          >
-            <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
-              <h3 className="font-medium text-gray-900">
-                {tc.name}
-                {tc.id && (
-                  <code className="ml-2 text-sm bg-gray-100 px-2 py-1 rounded">
-                    {tc.id}
-                  </code>
-                )}
-              </h3>
-            </div>
-            {hasArgs ? (
-              <table className="min-w-full divide-y divide-gray-200">
-                <tbody className="divide-y divide-gray-200">
-                  {Object.entries(args).map(([key, value], argIdx) => (
-                    <tr key={argIdx}>
-                      <td className="px-4 py-2 text-sm font-medium text-gray-900 whitespace-nowrap">
-                        {key}
-                      </td>
-                      <td className="px-4 py-2 text-sm text-gray-500">
-                        {isComplexValue(value) ? (
-                          <code className="bg-gray-50 rounded px-2 py-1 font-mono text-sm break-all">
-                            {JSON.stringify(value, null, 2)}
-                          </code>
-                        ) : (
-                          String(value)
-                        )}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <code className="text-sm block p-3">{"{}"}</code>
-            )}
-          </div>
+          <ToolCallCard 
+            key={tc.id || idx} 
+            toolCall={tc} 
+            isLoading={isLoading && !hasResponse} 
+            result={responseContent}
+          />
         );
       })}
     </div>
@@ -66,8 +282,8 @@ export function ToolCalls({
 }
 
 export function ToolResult({ message }: { message: ToolMessage }) {
-  const [isExpanded, setIsExpanded] = useState(false);
-
+  const [isModalOpen, setIsModalOpen] = useState(false);
+  
   let parsedContent: any;
   let isJsonContent = false;
 
@@ -77,110 +293,31 @@ export function ToolResult({ message }: { message: ToolMessage }) {
       isJsonContent = true;
     }
   } catch {
-    // Content is not JSON, use as is
     parsedContent = message.content;
   }
 
-  const contentStr = isJsonContent
-    ? JSON.stringify(parsedContent, null, 2)
-    : String(message.content);
-  const contentLines = contentStr.split("\n");
-  const shouldTruncate = contentLines.length > 4 || contentStr.length > 500;
-  const displayedContent =
-    shouldTruncate && !isExpanded
-      ? contentStr.length > 500
-        ? contentStr.slice(0, 500) + "..."
-        : contentLines.slice(0, 4).join("\n") + "\n..."
-      : contentStr;
+  // Create a pseudo tool call object for the card
+  const toolCall = {
+    name: message.name || 'tool_result',
+    id: message.tool_call_id || '',
+    args: {},
+    type: 'tool_call' as const,
+  };
 
   return (
-    <div className="border border-gray-200 rounded-lg overflow-hidden">
-      <div className="bg-gray-50 px-4 py-2 border-b border-gray-200">
-        <div className="flex items-center justify-between gap-2 flex-wrap">
-          {message.name ? (
-            <h3 className="font-medium text-gray-900">
-              Tool Result:{" "}
-              <code className="bg-gray-100 px-2 py-1 rounded">
-                {message.name}
-              </code>
-            </h3>
-          ) : (
-            <h3 className="font-medium text-gray-900">Tool Result</h3>
-          )}
-          {message.tool_call_id && (
-            <code className="ml-2 text-sm bg-gray-100 px-2 py-1 rounded">
-              {message.tool_call_id}
-            </code>
-          )}
-        </div>
-      </div>
-      <motion.div
-        className="min-w-full bg-gray-100"
-        initial={false}
-        animate={{ height: "auto" }}
-        transition={{ duration: 0.3 }}
-      >
-        <div className="p-3">
-          <AnimatePresence mode="wait" initial={false}>
-            <motion.div
-              key={isExpanded ? "expanded" : "collapsed"}
-              initial={{ opacity: 0, y: 20 }}
-              animate={{ opacity: 1, y: 0 }}
-              exit={{ opacity: 0, y: -20 }}
-              transition={{ duration: 0.2 }}
-            >
-              {isJsonContent ? (
-                <table className="min-w-full divide-y divide-gray-200">
-                  <tbody className="divide-y divide-gray-200">
-                    {(Array.isArray(parsedContent)
-                      ? isExpanded
-                        ? parsedContent
-                        : parsedContent.slice(0, 5)
-                      : Object.entries(parsedContent)
-                    ).map((item, argIdx) => {
-                      const [key, value] = Array.isArray(parsedContent)
-                        ? [argIdx, item]
-                        : [item[0], item[1]];
-                      return (
-                        <tr key={argIdx}>
-                          <td className="px-4 py-2 text-sm font-medium text-gray-900 whitespace-nowrap">
-                            {key}
-                          </td>
-                          <td className="px-4 py-2 text-sm text-gray-500">
-                            {isComplexValue(value) ? (
-                              <code className="bg-gray-50 rounded px-2 py-1 font-mono text-sm break-all">
-                                {JSON.stringify(value, null, 2)}
-                              </code>
-                            ) : (
-                              String(value)
-                            )}
-                          </td>
-                        </tr>
-                      );
-                    })}
-                  </tbody>
-                </table>
-              ) : (
-                <code className="text-sm block">{displayedContent}</code>
-              )}
-            </motion.div>
-          </AnimatePresence>
-        </div>
-        {((shouldTruncate && !isJsonContent) ||
-          (isJsonContent &&
-            Array.isArray(parsedContent) &&
-            parsedContent.length > 5)) && (
-          <motion.button
-            onClick={() => setIsExpanded(!isExpanded)}
-            className="w-full py-2 flex items-center justify-center border-t-[1px] border-gray-200 text-gray-500 hover:text-gray-600 hover:bg-gray-50 transition-all ease-in-out duration-200 cursor-pointer"
-            initial={{ scale: 1 }}
-            whileHover={{ scale: 1.02 }}
-            whileTap={{ scale: 0.98 }}
-          >
-            {isExpanded ? <ChevronUp /> : <ChevronDown />}
-          </motion.button>
-        )}
-      </motion.div>
-    </div>
+    <>
+      <ToolCallCard 
+        toolCall={toolCall} 
+        isLoading={false} 
+        result={parsedContent}
+      />
+      
+      <ToolDetailModal
+        isOpen={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        toolCall={toolCall}
+        result={parsedContent}
+      />
+    </>
   );
 }

@@ -98,6 +98,21 @@ export function AssistantMessage({
   const hasAnthropicToolCalls = !!anthropicStreamedToolCalls?.length
   const isToolResult = message?.type === 'tool'
 
+  // Find tool responses for this message's tool calls
+  const toolCallsWithResponses = hasToolCalls && message.tool_calls 
+    ? message.tool_calls.map(tc => {
+        // Find the corresponding tool message after this AI message
+        const messageIndex = thread.messages.findIndex(m => m.id === message.id)
+        const toolResponse = thread.messages.slice(messageIndex + 1).find(
+          m => m.type === 'tool' && 'tool_call_id' in m && m.tool_call_id === tc.id
+        )
+        return {
+          toolCall: tc,
+          response: toolResponse
+        }
+      })
+    : []
+
   if (isToolResult && hideToolCalls) {
     return null
   }
@@ -117,10 +132,24 @@ export function AssistantMessage({
           {!hideToolCalls && (
             <>
               {(hasToolCalls && toolCallsHaveContents && (
-                <ToolCalls toolCalls={message.tool_calls} />
+                <ToolCalls 
+                  toolCalls={message.tool_calls} 
+                  toolResponses={toolCallsWithResponses}
+                  isLoading={isLoading && isLastMessage}
+                />
               )) ||
-                (hasAnthropicToolCalls && <ToolCalls toolCalls={anthropicStreamedToolCalls} />) ||
-                (hasToolCalls && <ToolCalls toolCalls={message.tool_calls} />)}
+                (hasAnthropicToolCalls && (
+                  <ToolCalls 
+                    toolCalls={anthropicStreamedToolCalls} 
+                    isLoading={isLoading && isLastMessage}
+                  />
+                )) ||
+                (hasToolCalls && (
+                  <ToolCalls 
+                    toolCalls={message.tool_calls} 
+                    isLoading={isLoading && isLastMessage}
+                  />
+                ))}
             </>
           )}
 
