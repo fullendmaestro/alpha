@@ -10,8 +10,7 @@ type DrawerProps = React.ComponentProps<typeof DrawerPrimitive.Root> & {
 }
 
 const Drawer = ({ shouldScaleBackground = false, container, ...props }: DrawerProps) => {
-  const containerEl =
-    container ?? (document.getElementById('popup-layout')?.parentNode as HTMLElement)
+  const containerEl = container ?? (document.getElementById('popup-layout') as HTMLElement)
 
   return (
     <DrawerPrimitive.Root

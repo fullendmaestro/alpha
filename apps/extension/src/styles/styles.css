@@ -9,11 +9,12 @@ body,
   padding: 0;
   height: 100%;
   width: 100%;
+  overflow: hidden;
 }
 
 body {
   background-color: #f7fcff;
-  overflow: auto;
+  overflow: hidden;
 }
 
 .dark body {

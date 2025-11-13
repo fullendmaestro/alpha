@@ -14,7 +14,7 @@ const WalletProtocols = ({ isVisible, onClose }: { isVisible: boolean; onClose: 
         isOpen={isVisible}
         onClose={onClose}
         fullScreen
-        title="Switch Chain"
+        title="Wallet Protocols"
         className="h-full"
       >
         <>

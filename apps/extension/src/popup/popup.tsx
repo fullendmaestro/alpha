@@ -13,7 +13,7 @@ export const Popup = () => {
     // Only run on initial mount and when at root path
     if (location.pathname === '/') {
       if (hasWallets) {
-        navigate('/home', { replace: true })
+        navigate('/', { replace: true })
       } else {
         navigate('/onboard', { replace: true })
       }

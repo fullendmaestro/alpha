@@ -1,12 +1,12 @@
-import { AIMessage, ToolMessage } from "@langchain/langgraph-sdk";
-import { useState } from "react";
-import { motion, AnimatePresence } from "framer-motion";
-import { 
-  ChevronDown, 
-  ChevronUp, 
-  Wrench, 
-  Info, 
-  Loader2, 
+import { AIMessage, ToolMessage } from '@langchain/langgraph-sdk'
+import { useState } from 'react'
+import { motion, AnimatePresence } from 'framer-motion'
+import {
+  ChevronDown,
+  ChevronUp,
+  Wrench,
+  Info,
+  Loader2,
   CheckCircle2,
   Coins,
   Send,
@@ -14,50 +14,50 @@ import {
   MessageSquare,
   Users,
   CreditCard,
-  ArrowRightLeft
-} from "lucide-react";
-import { cn } from "@/lib/utils";
-import BottomModal from "@/components/buttom-modal";
+  ArrowRightLeft,
+} from 'lucide-react'
+import { cn } from '@/lib/utils'
+import BottomModal from '@/components/buttom-modal'
 
 // Define tool call type
 type ToolCall = {
-  name: string;
-  args: { [x: string]: any };
-  id?: string;
-  type?: "tool_call";
-};
+  name: string
+  args: { [x: string]: any }
+  id?: string
+  type?: 'tool_call'
+}
 
 function isComplexValue(value: any): boolean {
-  return Array.isArray(value) || (typeof value === "object" && value !== null);
+  return Array.isArray(value) || (typeof value === 'object' && value !== null)
 }
 
 // Map tool names to icons
 function getToolIcon(toolName: string) {
-  const name = toolName.toLowerCase();
-  
+  const name = toolName.toLowerCase()
+
   if (name.includes('token') || name.includes('fungible') || name.includes('nft')) {
-    return Coins;
+    return Coins
   }
   if (name.includes('transfer') || name.includes('hbar')) {
-    return Send;
+    return Send
   }
   if (name.includes('topic') || name.includes('message')) {
-    return MessageSquare;
+    return MessageSquare
   }
   if (name.includes('airdrop')) {
-    return Users;
+    return Users
   }
   if (name.includes('balance') || name.includes('query') || name.includes('account')) {
-    return CreditCard;
+    return CreditCard
   }
   if (name.includes('mint')) {
-    return Coins;
+    return Coins
   }
   if (name.includes('submit')) {
-    return FileText;
+    return FileText
   }
-  
-  return Wrench;
+
+  return Wrench
 }
 
 // Format tool name for display
@@ -65,55 +65,55 @@ function formatToolName(toolName: string): string {
   return toolName
     .replace(/_/g, ' ')
     .split(' ')
-    .map(word => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
-    .join(' ');
+    .map((word) => word.charAt(0).toUpperCase() + word.slice(1).toLowerCase())
+    .join(' ')
 }
 
 // Get tool description based on name
 function getToolDescription(toolName: string): string {
-  const name = toolName.toLowerCase();
-  
+  const name = toolName.toLowerCase()
+
   if (name.includes('create') && name.includes('fungible')) {
-    return 'Creating a new fungible token';
+    return 'Creating a new fungible token'
   }
   if (name.includes('create') && (name.includes('nft') || name.includes('non_fungible'))) {
-    return 'Creating a new NFT';
+    return 'Creating a new NFT'
   }
   if (name.includes('transfer') && name.includes('hbar')) {
-    return 'Transferring HBAR';
+    return 'Transferring HBAR'
   }
   if (name.includes('airdrop')) {
-    return 'Airdropping tokens';
+    return 'Airdropping tokens'
   }
   if (name.includes('mint')) {
-    return 'Minting tokens';
+    return 'Minting tokens'
   }
   if (name.includes('balance')) {
-    return 'Fetching balance';
+    return 'Fetching balance'
   }
   if (name.includes('topic') && name.includes('create')) {
-    return 'Creating topic';
+    return 'Creating topic'
   }
   if (name.includes('topic') && name.includes('submit')) {
-    return 'Submitting message to topic';
+    return 'Submitting message to topic'
   }
   if (name.includes('query') && name.includes('account')) {
-    return 'Querying account information';
+    return 'Querying account information'
   }
-  
-  return 'Executing operation';
+
+  return 'Executing operation'
 }
 
 interface ToolDetailModalProps {
-  isOpen: boolean;
-  onClose: () => void;
-  toolCall: ToolCall;
-  result?: any;
+  isOpen: boolean
+  onClose: () => void
+  toolCall: ToolCall
+  result?: any
 }
 
 function ToolDetailModal({ isOpen, onClose, toolCall, result }: ToolDetailModalProps) {
-  const args = toolCall.args as Record<string, any>;
-  const hasArgs = Object.keys(args).length > 0;
+  const args = toolCall.args as Record<string, any>
+  const hasArgs = Object.keys(args).length > 0
 
   return (
     <BottomModal
@@ -137,9 +137,7 @@ function ToolDetailModal({ isOpen, onClose, toolCall, result }: ToolDetailModalP
             <div className="space-y-2">
               {Object.entries(args).map(([key, value], idx) => (
                 <div key={idx} className="bg-secondary-100 rounded-lg p-3">
-                  <div className="text-xs font-medium text-foreground/70 mb-1">
-                    {key}
-                  </div>
+                  <div className="text-xs font-medium text-foreground/70 mb-1">{key}</div>
                   <div className="text-sm">
                     {isComplexValue(value) ? (
                       <pre className="bg-secondary-200 rounded p-2 text-xs overflow-x-auto">
@@ -170,28 +168,28 @@ function ToolDetailModal({ isOpen, onClose, toolCall, result }: ToolDetailModalP
         )}
       </div>
     </BottomModal>
-  );
+  )
 }
 
 interface ToolCallCardProps {
-  toolCall: ToolCall;
-  isLoading?: boolean;
-  result?: any;
+  toolCall: ToolCall
+  isLoading?: boolean
+  result?: any
 }
 
 function ToolCallCard({ toolCall, isLoading = false, result }: ToolCallCardProps) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  const Icon = getToolIcon(toolCall.name);
-  const displayName = formatToolName(toolCall.name);
-  const description = getToolDescription(toolCall.name);
+  const [isModalOpen, setIsModalOpen] = useState(false)
+  const Icon = getToolIcon(toolCall.name)
+  const displayName = formatToolName(toolCall.name)
+  const description = getToolDescription(toolCall.name)
 
   return (
     <>
       <div
         className={cn(
           'flex items-center justify-between gap-3 py-3 px-4 rounded-2xl transition-all cursor-pointer',
-          isLoading 
-            ? 'bg-accent-blue-900/50 border border-accent-blue-700/50' 
+          isLoading
+            ? 'bg-accent-blue-900/50 border border-accent-blue-700/50'
             : 'bg-secondary-100 hover:bg-secondary-200'
         )}
         onClick={() => setIsModalOpen(true)}
@@ -199,27 +197,21 @@ function ToolCallCard({ toolCall, isLoading = false, result }: ToolCallCardProps
         <div className="size-9 rounded-full bg-secondary-300 flex items-center justify-center flex-shrink-0">
           <Icon size={20} className="text-foreground/70" />
         </div>
-        
+
         <div className="flex-1 min-w-0">
           <div className="flex items-center gap-2">
             <div className="text-sm font-bold truncate">{displayName}</div>
-            {isLoading && (
-              <Loader2 size={14} className="animate-spin text-accent-blue" />
-            )}
-            {!isLoading && result && (
-              <CheckCircle2 size={14} className="text-green-500" />
-            )}
+            {isLoading && <Loader2 size={14} className="animate-spin text-accent-blue" />}
+            {!isLoading && result && <CheckCircle2 size={14} className="text-green-500" />}
           </div>
-          <div className="text-xs text-muted-foreground truncate">
-            {description}
-          </div>
+          <div className="text-xs text-muted-foreground truncate">{description}</div>
         </div>
 
         <button
           className="size-7 cursor-pointer justify-center text-monochrome/60 hover:text-monochrome grid place-content-center flex-shrink-0"
           onClick={(e) => {
-            e.stopPropagation();
-            setIsModalOpen(true);
+            e.stopPropagation()
+            setIsModalOpen(true)
           }}
         >
           <Info size={18} />
@@ -233,7 +225,7 @@ function ToolCallCard({ toolCall, isLoading = false, result }: ToolCallCardProps
         result={result}
       />
     </>
-  );
+  )
 }
 
 export function ToolCalls({
@@ -241,83 +233,47 @@ export function ToolCalls({
   toolResponses,
   isLoading = false,
 }: {
-  toolCalls: AIMessage["tool_calls"];
-  toolResponses?: Array<{ toolCall: ToolCall; response?: any }>;
-  isLoading?: boolean;
+  toolCalls: AIMessage['tool_calls']
+  toolResponses?: Array<{ toolCall: ToolCall; response?: any }>
+  isLoading?: boolean
 }) {
-  if (!toolCalls || toolCalls.length === 0) return null;
+  if (!toolCalls || toolCalls.length === 0) return null
 
   return (
     <div className="space-y-3 w-full">
       {toolCalls.map((tc, idx) => {
         // Find the response for this tool call
-        const toolData = toolResponses?.find(tr => tr.toolCall.id === tc.id);
-        const hasResponse = toolData?.response;
-        
+        const toolData = toolResponses?.find((tr) => tr.toolCall.id === tc.id)
+        const hasResponse = toolData?.response
+
         // Parse the response content
-        let responseContent;
+        let responseContent
         if (hasResponse) {
           try {
             if (typeof toolData.response.content === 'string') {
-              responseContent = JSON.parse(toolData.response.content);
+              responseContent = JSON.parse(toolData.response.content)
             } else {
-              responseContent = toolData.response.content;
+              responseContent = toolData.response.content
             }
           } catch {
-            responseContent = toolData.response.content;
+            responseContent = toolData.response.content
           }
         }
 
         return (
-          <ToolCallCard 
-            key={tc.id || idx} 
-            toolCall={tc} 
-            isLoading={isLoading && !hasResponse} 
+          <ToolCallCard
+            key={tc.id || idx}
+            toolCall={tc}
+            isLoading={isLoading && !hasResponse}
             result={responseContent}
           />
-        );
+        )
       })}
     </div>
-  );
+  )
 }
 
 export function ToolResult({ message }: { message: ToolMessage }) {
-  const [isModalOpen, setIsModalOpen] = useState(false);
-  
-  let parsedContent: any;
-  let isJsonContent = false;
-
-  try {
-    if (typeof message.content === "string") {
-      parsedContent = JSON.parse(message.content);
-      isJsonContent = true;
-    }
-  } catch {
-    parsedContent = message.content;
-  }
-
-  // Create a pseudo tool call object for the card
-  const toolCall = {
-    name: message.name || 'tool_result',
-    id: message.tool_call_id || '',
-    args: {},
-    type: 'tool_call' as const,
-  };
-
-  return (
-    <>
-      <ToolCallCard 
-        toolCall={toolCall} 
-        isLoading={false} 
-        result={parsedContent}
-      />
-      
-      <ToolDetailModal
-        isOpen={isModalOpen}
-        onClose={() => setIsModalOpen(false)}
-        toolCall={toolCall}
-        result={parsedContent}
-      />
-    </>
-  );
+  // Don't render tool results separately - they're now shown in the AI message's ToolCallCard
+  return null
 }
