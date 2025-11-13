@@ -44,23 +44,23 @@ const appSlice = createSlice({
         apiUrl?: string
         assistantId?: string
         threadId?: string | null
-        apiKey?: string
+        apiKey?: string | null
         hideToolCalls?: boolean
       }>
     ) => {
-      if (action.payload.apiUrl) {
+      if (action.payload.apiUrl !== undefined) {
         state.langgraphConfig.apiUrl = action.payload.apiUrl
       }
-      if (action.payload.assistantId) {
+      if (action.payload.assistantId !== undefined) {
         state.langgraphConfig.assistantId = action.payload.assistantId
       }
-      if (action.payload.threadId) {
+      if (action.payload.threadId !== undefined) {
         state.langgraphConfig.threadId = action.payload.threadId
       }
-      if (action.payload.apiKey) {
+      if (action.payload.apiKey !== undefined) {
         state.langgraphConfig.apiKey = action.payload.apiKey
       }
-      if (action.payload.hideToolCalls) {
+      if (action.payload.hideToolCalls !== undefined) {
         state.langgraphConfig.hideToolCalls = action.payload.hideToolCalls
       }
     },
