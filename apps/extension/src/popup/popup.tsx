@@ -20,9 +20,5 @@ export const Popup = () => {
     }
   }, []) // Empty dependency array to run only once on mount
 
-  return (
-    <div className="h-full w-full">
-      <AppRoutes />
-    </div>
-  )
+  return <AppRoutes />
 }

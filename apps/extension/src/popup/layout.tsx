@@ -38,32 +38,26 @@ export const GlobalLayout = (props: GlobalLayoutProps) => {
 
   const isBottomNavVisible = showBottomNav(props?.location?.pathname)
 
-  return (
-    <div id="popup-layout" className="flex flex-col h-full w-full bg-secondary relative">
-      {/* Header - but not on chat page */}
-      {/* {!isChatPage && ( */}
-      <div className="flex-shrink-0">
-        <GeneralHeader />
-      </div>
-      {/* )} */}
+  const isOnboarding = false
 
-      {/* Main content */}
+  return (
+    <div
+      className={cn(
+        'enclosing-panel relative m-auto flex flex-col overflow-hidden',
+        isOnboarding
+          ? 'h-[38.875rem] w-[28rem] bg-secondary border border-secondary-200 rounded-3xl'
+          : 'panel-width bg-secondary panel-height max-panel-height rounded-2xl'
+      )}
+    >
       <div
-        className={cn(
-          'flex-1',
-          isChatPage ? 'overflow-hidden' : 'overflow-y-auto overflow-x-hidden'
-        )}
+        key={props.location?.pathname}
+        id="popup-layout"
+        className={'flex-1 panel-height overflow-auto flex flex-col hide-scrollbar'}
       >
+        <GeneralHeader />
+
         {props.children}
       </div>
-
-      {/* Bottom navigation if needed */}
-      {isBottomNavVisible && (
-        <div className="flex-shrink-0">
-          {/*  */}
-          {/* <BottomNav /> */}
-        </div>
-      )}
     </div>
   )
 }

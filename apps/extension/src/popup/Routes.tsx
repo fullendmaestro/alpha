@@ -22,29 +22,25 @@ export default function AppRoutes() {
 
   // Chat and other pages use side panel layout
   return (
-    <div className="h-full w-full flex items-center justify-center">
-      <div className="w-[28rem] h-[37.5rem] rounded-3xl shadow-xl bg-secondary overflow-hidden">
-        <GlobalLayout location={location}>
-          <Routes>
-            <Route
-              path="/"
-              element={
-                <Protected>
-                  <Home />
-                </Protected>
-              }
-            />
-            <Route
-              path="/chat"
-              element={
-                <Protected>
-                  <ChatPage />
-                </Protected>
-              }
-            />
-          </Routes>
-        </GlobalLayout>
-      </div>
-    </div>
+    <GlobalLayout location={location}>
+      <Routes>
+        <Route
+          path="/"
+          element={
+            <Protected>
+              <Home />
+            </Protected>
+          }
+        />
+        <Route
+          path="/chat"
+          element={
+            <Protected>
+              <ChatPage />
+            </Protected>
+          }
+        />
+      </Routes>
+    </GlobalLayout>
   )
 }

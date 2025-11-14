@@ -76,10 +76,9 @@
 }
 
 body {
-  background-color: #e5e5e5;
+  /* background-color: #e5e5e5; */
   font-family: 'Satoshi';
   font-size: 16px;
-  list-style-type: circle;
   font-weight: 400;
 }
 

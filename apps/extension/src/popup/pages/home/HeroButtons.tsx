@@ -1,6 +1,7 @@
 import { cn } from '@/lib/utils'
 import { SendIcon } from 'lucide-react'
 import type { ComponentPropsWithoutRef } from 'react'
+import {} from 'lucide-react'
 
 interface ButtonItemProps extends ComponentPropsWithoutRef<'button'> {
   disabled?: boolean
@@ -35,19 +36,9 @@ export const HeroButtons = ({ skipVote = false }: { skipVote?: boolean }) => {
       {/* Send Button */}
       <ButtonItem label="Send" icon={SendIcon} onClick={() => {}} />
 
-      <ButtonItem
-        label="Swap"
-        icon={SwapIcon}
-        onClick={() => handleSwapClick()}
-        disabled={featureFlags?.all_chains?.swap === 'disabled' || walletCtaDisabled}
-      />
+      <ButtonItem label="Swap" icon={SwapIcon} />
 
-      <ButtonItem
-        label="Stake"
-        icon={StakeIcon}
-        onClick={() => navigate('/stake')}
-        disabled={walletCtaDisabled}
-      />
+      <ButtonItem label="Stake" icon={StakeIcon} />
     </div>
   )
 }

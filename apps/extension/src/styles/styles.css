@@ -1,41 +1,60 @@
-.panel-width {
-  min-width: 400px;
-}
-
-html,
-body,
-#root {
-  margin: 0;
-  padding: 0;
-  height: 100%;
-  width: 100%;
-  overflow: hidden;
-}
+/* sssssssssssssssssssssssssss */
 
 body {
-  background-color: #f7fcff;
-  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  margin: 0;
+  padding: 0;
+
+  /* background-color: #e5e5e5; */
+  background-position: center;
+  background-repeat: no-repeat;
+  background-size: cover;
+
+  height: 100vh;
+  list-style-type: circle;
 }
 
-.dark body {
-  background-color: #000205;
+.dark .body {
+  background-color: #000000;
 }
 
-/* Chrome extension popup specific styles */
-@media (max-width: 450px) {
-  html,
-  body,
-  #root {
-    overflow: hidden;
-  }
-
-  body {
-    min-height: 600px;
-    min-width: 400px;
-    max-height: 600px;
-    max-width: 400px;
-  }
+.panel-height {
+  height: 600px;
 }
+
+.side-panel .panel-height {
+  height: 100%;
+}
+
+.max-panel-height {
+  max-height: 600px;
+}
+
+.min-panel-height {
+  min-height: 600px;
+}
+
+.side-panel .max-panel-height {
+  max-height: 100%;
+}
+
+.panel-width {
+  width: 400px;
+}
+
+.side-panel .enclosing-panel,
+.side-panel .enclosing-panel * {
+  max-width: 100%;
+}
+
+.side-panel .panel-width {
+  max-width: 100%;
+}
+
+/* sssssssssssssssssss */
 
 html {
   scrollbar-width: thin;
@@ -44,15 +63,26 @@ html {
 
 /* For Webkit browsers */
 html::-webkit-scrollbar {
-  width: 8px;
+  width: 4px;
   background: transparent;
 }
 
 html::-webkit-scrollbar-thumb {
   background: rgba(34, 34, 34, 0.05);
-  border-radius: 8px;
+  border-radius: 4px;
 }
 
 html::-webkit-scrollbar-track {
   background: transparent;
+}
+
+/* Hide scrollbar for Chrome, Safari and Opera */
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Hide scrollbar for IE, Edge and Firefox */
+.hide-scrollbar {
+  -ms-overflow-style: none; /* IE and Edge */
+  scrollbar-width: none; /* Firefox */
 }

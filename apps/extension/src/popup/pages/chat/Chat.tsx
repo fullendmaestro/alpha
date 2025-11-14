@@ -152,9 +152,6 @@ const Chat = () => {
           {isLoading && !firstTokenReceived && <AssistantMessageLoading />}
           <div ref={messagesEndRef} />
         </>
-
-        {/* <ChatMessages messages={messages} />
-        {isSendingMessage && <TypingIndicator />} */}
       </div>
       <div className="flex-shrink-0 px-4 pb-4 pt-2 border-t border-border">
         <div className="bg-muted rounded-2xl border shadow-xs mx-auto mb-1 w-full max-w-3xl relative z-10">
