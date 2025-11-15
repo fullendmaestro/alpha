@@ -66,15 +66,15 @@ export function HumanMessage({ message, isLoading }: { message: Message; isLoadi
   return (
     <div
       className={cn(
-        'flex items-center ml-auto gap-2 group max-w-[85%]',
-        isEditing && 'w-full max-w-xl'
+        'flex items-start ml-auto gap-2 group max-w-[80%]',
+        isEditing && 'w-full max-w-[85%]'
       )}
     >
       <div className={cn('flex flex-col gap-2', isEditing && 'w-full')}>
         {isEditing ? (
           <EditableContent value={value} setValue={setValue} onSubmit={handleSubmitEdit} />
         ) : (
-          <p className="px-4 py-2 rounded-3xl bg-muted w-fit ml-auto whitespace-pre-wrap">
+          <p className="px-3.5 py-2 rounded-2xl bg-primary text-primary-foreground w-fit ml-auto whitespace-pre-wrap text-sm">
             {contentString}
           </p>
         )}
