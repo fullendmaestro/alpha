@@ -18,6 +18,7 @@ import { graph } from './alpha-agent/graph.js'
 import { AIMessage } from '@langchain/core/messages'
 import { ConversationManager } from './conversation-manager.js'
 import type {
+  Conversation,
   JSONRPCRequest,
   CreateConversationResponse,
   ListConversationResponse,
@@ -133,155 +134,6 @@ class HostAgentExecutor implements AgentExecutor {
     this.cancelledTasks.add(taskId)
   }
 
-  /**
-   * Process message directly (for backend API)
-   */
-  async processMessage(message: Message): Promise<void> {
-    const taskId = uuidv4()
-    const contextId = message.contextId || uuidv4()
-
-    console.log(`[HostAgent] Processing message ${message.messageId} for task ${taskId}`)
-
-    // Ensure contextId is set
-    if (!message.contextId) {
-      message.contextId = contextId
-    }
-
-    // Track in conversation manager
-    let conversation = this.conversationManager.getConversationByContext(contextId)
-
-    // Create conversation if it doesn't exist
-    if (!conversation) {
-      conversation = this.conversationManager.createConversation()
-      // Link contextId to this conversation by adding a dummy message
-      this.conversationManager.addMessage(conversation.conversation_id, {
-        ...message,
-        contextId,
-      })
-      // Remove it, we'll add the real one below
-      conversation.messages.pop()
-    }
-
-    // Add user message to conversation
-    this.conversationManager.addMessage(conversation.conversation_id, message)
-    this.conversationManager.createEventFromMessage(message, 'user')
-
-    if (message.messageId) {
-      this.conversationManager.addPendingMessage(message.messageId)
-    }
-
-    try {
-      // Build conversation history from all messages
-      const historyMessages = conversation.messages
-
-      // Convert to LangGraph format
-      const langGraphMessages = historyMessages
-        .filter((m) => m.parts.some((p) => p.kind === 'text'))
-        .map((m) => ({
-          role: m.role === 'agent' ? 'assistant' : 'user',
-          content: m.parts
-            .filter((p): p is TextPart => p.kind === 'text')
-            .map((p) => p.text)
-            .join('\n'),
-        }))
-
-      // Enhanced system prompt
-      const agentList = this.listRemoteAgents()
-        .map((a) => `- ${a.name}: ${a.description || 'No description'}`)
-        .join('\n')
-
-      const systemPrompt = `You are an expert AI assistant that helps users with their requests.
-
-Available Remote Agents:
-${agentList || 'No remote agents available'}
-
-You can delegate tasks to remote agents when appropriate.
-Always be helpful, accurate, and friendly.
-Current time: ${new Date().toISOString()}`
-
-      const config = {
-        configurable: {
-          systemPromptTemplate: systemPrompt,
-          model: 'google-genai/gemini-2.0-flash-exp',
-          thread_id: contextId,
-        },
-      }
-
-      const streamResponse = await graph.stream(
-        {
-          messages: langGraphMessages.map((m) => ({
-            role: m.role,
-            content: m.content,
-          })),
-        },
-        config
-      )
-
-      let finalResponse = ''
-
-      for await (const chunk of streamResponse) {
-        if (chunk.callModel?.messages) {
-          const messages = chunk.callModel.messages
-          const messageArray = Array.isArray(messages) ? messages : [messages]
-          const lastMessage = messageArray[messageArray.length - 1]
-
-          if (lastMessage instanceof AIMessage) {
-            if (lastMessage.content) {
-              finalResponse = String(lastMessage.content)
-            }
-          }
-        }
-      }
-
-      // Create agent response message
-      const agentMessage: Message = {
-        kind: 'message',
-        role: 'agent',
-        messageId: uuidv4(),
-        parts: [
-          {
-            kind: 'text',
-            text: finalResponse || 'I received your message.',
-          },
-        ],
-        taskId: taskId,
-        contextId: contextId,
-      }
-
-      // Add to conversation
-      this.conversationManager.addMessage(conversation.conversation_id, agentMessage)
-      this.conversationManager.createEventFromMessage(agentMessage, 'agent')
-
-      if (message.messageId) {
-        this.conversationManager.removePendingMessage(message.messageId)
-      }
-
-      console.log(`[HostAgent] Completed processing for task ${taskId}`)
-    } catch (error) {
-      console.error(`[HostAgent] Error processing message:`, error)
-
-      const errorMessage: Message = {
-        kind: 'message',
-        role: 'agent',
-        messageId: uuidv4(),
-        parts: [
-          {
-            kind: 'text',
-            text: `Error: ${error instanceof Error ? error.message : 'Unknown error'}`,
-          },
-        ],
-        taskId: taskId,
-        contextId: contextId,
-      }
-
-      this.conversationManager.addMessage(conversation.conversation_id, errorMessage)
-
-      if (message.messageId) {
-        this.conversationManager.removePendingMessage(message.messageId)
-      }
-    }
-  }
-
   async execute(requestContext: RequestContext, eventBus: ExecutionEventBus): Promise<void> {
     const userMessage = requestContext.userMessage
     const existingTask = requestContext.task
@@ -291,34 +143,26 @@ Current time: ${new Date().toISOString()}`
 
     console.log(`[HostAgent] Processing message ${userMessage.messageId} for task ${taskId}`)
 
-    // Ensure contextId is set
-    if (!userMessage.contextId) {
+    // Track in conversation manager
+    let conversation: Conversation | undefined
+    if (userMessage.contextId) {
+      conversation = this.conversationManager.getConversationByContext(userMessage.contextId)
+    }
+
+    // Create conversation if needed
+    if (!conversation && contextId) {
+      conversation = this.conversationManager.createConversation()
       userMessage.contextId = contextId
     }
 
-    // Track in conversation manager
-    let conversation = this.conversationManager.getConversationByContext(contextId)
-
-    // Create conversation if it doesn't exist
-    if (!conversation) {
-      conversation = this.conversationManager.createConversation()
-      // Link contextId to this conversation
-      if (contextId) {
-        this.conversationManager.addMessage(conversation.conversation_id, {
-          ...userMessage,
-          contextId,
-        })
-        // Remove the duplicate we just added, we'll add it properly below
-        conversation.messages.pop()
-      }
-    }
-
     // Add user message to conversation
-    this.conversationManager.addMessage(conversation.conversation_id, userMessage)
-    this.conversationManager.createEventFromMessage(userMessage, 'user')
+    if (conversation) {
+      this.conversationManager.addMessage(conversation.conversation_id, userMessage)
+      this.conversationManager.createEventFromMessage(userMessage, 'user')
 
-    if (userMessage.messageId) {
-      this.conversationManager.addPendingMessage(userMessage.messageId)
+      if (userMessage.messageId) {
+        this.conversationManager.addPendingMessage(userMessage.messageId)
+      }
     }
 
     // Publish initial task if new
@@ -490,11 +334,13 @@ Current time: ${new Date().toISOString()}`
       }
 
       // Add to conversation
-      this.conversationManager.addMessage(conversation.conversation_id, agentMessage)
-      this.conversationManager.createEventFromMessage(agentMessage, 'agent')
+      if (conversation) {
+        this.conversationManager.addMessage(conversation.conversation_id, agentMessage)
+        this.conversationManager.createEventFromMessage(agentMessage, 'agent')
 
-      if (userMessage.messageId) {
-        this.conversationManager.removePendingMessage(userMessage.messageId)
+        if (userMessage.messageId) {
+          this.conversationManager.removePendingMessage(userMessage.messageId)
+        }
       }
 
       // Publish completion
@@ -532,10 +378,12 @@ Current time: ${new Date().toISOString()}`
         contextId: contextId,
       }
 
-      this.conversationManager.addMessage(conversation.conversation_id, errorMessage)
+      if (conversation) {
+        this.conversationManager.addMessage(conversation.conversation_id, errorMessage)
 
-      if (userMessage.messageId) {
-        this.conversationManager.removePendingMessage(userMessage.messageId)
+        if (userMessage.messageId) {
+          this.conversationManager.removePendingMessage(userMessage.messageId)
+        }
       }
 
       const errorUpdate: TaskStatusUpdateEvent = {
@@ -622,14 +470,6 @@ async function main() {
       const body = req.body as JSONRPCRequest
       const message = body.params as Message
 
-      // Ensure message has required fields
-      if (!message.messageId) {
-        message.messageId = uuidv4()
-      }
-      if (!message.contextId) {
-        message.contextId = uuidv4()
-      }
-
       // Sanitize message
       const sanitizedMessage = conversationManager.sanitizeMessage(message)
 
@@ -637,20 +477,15 @@ async function main() {
         jsonrpc: '2.0',
         id: body.id,
         result: {
-          message_id: sanitizedMessage.messageId,
-          context_id: sanitizedMessage.contextId,
+          message_id: sanitizedMessage.messageId || uuidv4(),
+          context_id: sanitizedMessage.contextId || '',
         } as MessageInfo,
       }
 
-      // Return immediately
       res.json(response)
 
-      // Process asynchronously directly through executor
-      setImmediate(() => {
-        executor.processMessage(sanitizedMessage).catch((error) => {
-          console.error('Error processing message:', error)
-        })
-      })
+      // Process asynchronously (will be handled by executor)
+      // The executor will track it in conversation manager
     } catch (error) {
       res.status(500).json({
         jsonrpc: '2.0',
